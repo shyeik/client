@@ -23,7 +23,7 @@ const port = process.env.PORT || 8080;
 app.use(compression()); // Enable Gzip compression
 
 console.log("Allowed origin:", process.env.CLIENT_ORIGIN); // Debugging log
-
+s
 app.use(
   cors({
     origin: process.env.CLIENT_ORIGIN, // Adjust as needed
@@ -100,13 +100,17 @@ app.get(
         expiresIn: "1h",
       });
       res.redirect(
-        `${frontendURL}/?token=${token}&name=${encodeURIComponent(req.user.name)}&id=${req.user.id}`
+        `${frontendURL}/hero?token=${token}&name=${encodeURIComponent(req.user.name)}&id=${req.user.id}`
       );
     } else {
       res.redirect("/login");
     }
   }
 );
+
+app.get("/", (req, res) => {
+  res.send("Loading...");
+});
 
 // Register
 app.post("/Register", async (req, res) => {
@@ -125,9 +129,7 @@ app.post("/Register", async (req, res) => {
   }
 });
 
-app.post("/", (req, res) => {
-  res.send("Error...");
-});
+
 
 // Login
 app.post("/login", async (req, res) => {
