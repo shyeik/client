@@ -23,7 +23,7 @@ const port = process.env.PORT || 8080;
 app.use(compression()); // Enable Gzip compression
 
 console.log("Allowed origin:", process.env.CLIENT_ORIGIN); // Debugging log
-s
+
 app.use(
   cors({
     origin: process.env.CLIENT_ORIGIN, // Adjust as needed
