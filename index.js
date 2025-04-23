@@ -122,6 +122,10 @@ app.post("/Register", async (req, res) => {
   }
 });
 
+app.post("/", (req, res) => {
+  res.send("Error...");
+});
+
 // Login
 app.post("/login", async (req, res) => {
   const { email, password, captchaToken } = req.body;
