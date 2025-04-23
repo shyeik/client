@@ -73,6 +73,7 @@ passport.use(
   )
 );
 
+
 const conectbco = process.env.MONGO_URI;
 const jwt_secret = process.env.JWT_SECRET;
 
@@ -81,7 +82,13 @@ connect(conectbco)
   .catch((err) =>
     console.log(`Error in connection with DataBase MongoDB ${err}`)
   );
-// Routes
+
+app.get("/", (req, res) => {
+    res.send("Hello World");
+  });
+
+
+
 
 // Google Authentication
 app.get(
@@ -107,6 +114,11 @@ app.get(
     }
   }
 );
+
+
+
+
+
 
 // Register
 app.post("/Register", async (req, res) => {
