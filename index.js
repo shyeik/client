@@ -25,7 +25,7 @@ app.use(compression()); // Enable Gzip compression
 
 app.use(
   cors({
-    origin: "https://bakeryeasy-client-backend.vercel.app", // Adjust as needed
+    origin: process.env.CLIENT_ORIGIN, // Adjust as needed
     credentials: true, // Allow credentials if needed
   })
 );
@@ -51,8 +51,8 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: "https://bakeryeasy-frontend.vercel.app/auth/google/callback",
-    },
+      callbackURL: process.env.GOOGLE_CALLBACK_URL,
+    },  
     async (accessToken, refreshToken, profile, done) => {
       try {
         let user = await User.findOne({ googleId: profile.id });
@@ -88,6 +88,8 @@ app.get(
   passport.authenticate("google", { scope: ["profile", "email"] })
 );
 
+const frontendURL = process.env.FRONTEND_URL;
+
 app.get(
   "/auth/google/callback",
   passport.authenticate("google", { failureRedirect: "/login" }),
@@ -97,7 +99,7 @@ app.get(
         expiresIn: "1h",
       });
       res.redirect(
-        `https://bakeryeasy-frontend.vercel.app/?token=${token}&name=${req.user.name}&id=${req.user.id}`
+        `${frontendURL}/?token=${token}&name=${encodeURIComponent(req.user.name)}&id=${req.user.id}`
       );
     } else {
       res.redirect("/login");
@@ -131,7 +133,7 @@ app.post("/login", async (req, res) => {
   const { email, password, captchaToken } = req.body;
 
   // Verify reCAPTCHA token
-  const secretKey = "6LeQLI4qAAAAAPUcRr1CBFWzqRzFk0mqijAWMZXG"; // Replace with your secret key
+  const secretKey = process.env.RECAPTCHA_SECRET_KEY; // Replace with your secret key
   const response = await axios.post(
     `https://www.google.com/recaptcha/api/siteverify`,
     null,
@@ -700,8 +702,8 @@ const createPaymentLink = async (amount, description, orderId, remarks) => {
         payer_email: User.email || "customer@example.com",
         description,
         currency: "PHP",
-        success_redirect_url: "https://bakeryeasy-frontend.vercel.app/cart?status=success",
-        failure_redirect_url: "https://bakeryeasy-frontend.vercel.app/cart?status=failed",
+        success_redirect_url: `${frontendURL}/cart?status=success`,
+        failure_redirect_url: `${frontendURL}/cart?status=failed`,
         metadata: { order_id: orderId, remarks },
       },
       {
