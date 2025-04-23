@@ -81,26 +81,28 @@ connect(conectbco)
   .catch((err) =>
     console.log(`Error in connection with DataBase MongoDB ${err}`)
   );
+  
 // Routes
-
+const frontendURL = process.env.FRONTEND_URL;
 // Google Authentication
 app.get(
   "/auth/google",
   passport.authenticate("google", { scope: ["profile", "email"] })
 );
 
-const frontendURL = process.env.FRONTEND_URL;
+
 
 app.get(
   "/auth/google/callback",
-  passport.authenticate("google", { failureRedirect: "/login" }),
+  passport.authenticate("google", { failureRedirect: "/login", session: false }),
   (req, res) => {
     if (req.user) {
-      const token = jwt.sign({ id: req.user._id }, JWT_SECRET, {
+      const token = jwt.sign({ id: req.user._id }, process.env.JWT_SECRET, {
         expiresIn: "1h",
       });
+
       res.redirect(
-        `${frontendURL}/hero?token=${token}&name=${encodeURIComponent(req.user.name)}&id=${req.user.id}`
+        `${frontendURL}/?token=${token}&name=${encodeURIComponent(req.user.name)}&id=${req.user._id}`
       );
     } else {
       res.redirect("/login");
@@ -109,8 +111,9 @@ app.get(
 );
 
 app.get("/", (req, res) => {
-  res.send("Loading...");
+  res.send("Hello World");
 });
+
 
 // Register
 app.post("/Register", async (req, res) => {
@@ -129,7 +132,9 @@ app.post("/Register", async (req, res) => {
   }
 });
 
-
+app.post("/", (req, res) => {
+  res.send("Error...");
+});
 
 // Login
 app.post("/login", async (req, res) => {
